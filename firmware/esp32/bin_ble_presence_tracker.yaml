@@ -1,0 +1,19 @@
+substitutions:
+  name: "wastecontrol-bin-beacon"
+  friendly_name: "Trash Bin BLE Beacon"
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+esp32_ble_beacon:
+  type: iBeacon
+  uuid: "c299e525-2b47-497d-bb62-632349be9a12"
+  major: 100
+  minor: 1
+  tx_power: 0

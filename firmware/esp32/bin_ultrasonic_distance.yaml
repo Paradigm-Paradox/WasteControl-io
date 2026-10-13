@@ -1,0 +1,60 @@
+substitutions:
+  name: "wastecontrol-bin-sensor"
+  friendly_name: "Trash Bin Fill Sensor"
+  stream_id: "trash"
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+wifi:
+  ssid: "!secret wifi_ssid"
+  password: "!secret wifi_password"
+
+api:
+  encryption:
+    key: "!secret api_encryption_key"
+
+ota:
+  - platform: esphome
+
+logger:
+
+# Ultrasonic UART sensor (A02YYUW Waterproof Ultrasonic)
+uart:
+  id: uart_bus
+  tx_pin: GPIO21
+  rx_pin: GPIO20
+  baud_rate: 9600
+
+sensor:
+  - platform: a02yyuw
+    uart_id: uart_bus
+    name: "${friendly_name} Distance"
+    id: bin_distance
+    update_interval: 60s
+    unit_of_measurement: "cm"
+    accuracy_decimals: 1
+    filters:
+      - median:
+          window_size: 5
+          send_every: 1
+          send_first_at: 1
+
+  # Battery voltage & level
+  - platform: adc
+    pin: GPIO0
+    name: "${friendly_name} Battery"
+    update_interval: 60s
+    attenuation: 12db
+    filters:
+      - multiply: 2.0  # Voltage divider (100k / 100k)
+
+deep_sleep:
+  run_duration: 20s
+  sleep_duration: 30min
